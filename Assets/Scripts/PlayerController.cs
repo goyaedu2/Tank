@@ -1,10 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] WheelCollider[] wheelColliders;
+    [SerializeField] GameObject bullet;
+    [SerializeField] Transform bulletSpawnPoint;
+    [SerializeField] GameObject expolsion;
+    [SerializeField] GameObject turret;
+
+    float hp = 1f;
 
     Rigidbody rigidbody;
 
@@ -15,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        float v = Input.GetAxis("Vertical1");
+        float v = Input.GetAxis("Vertical");
 
         foreach (var wheelCollider in wheelColliders)
         {
@@ -31,11 +38,39 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        float h = Input.GetAxis("Horizontal1");
+        float h = Input.GetAxis("Horizontal");
 
         for (int i = 0; i < 2; i++)
         {
             wheelColliders[i].steerAngle = h * 45f;
+        }
+
+        // ÃÑ¾Ë ¹ß»ç
+        if (Input.GetMouseButtonDown(0))
+        {
+            Instantiate(bullet, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        }
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            turret.transform.Rotate(-Vector3.up * 20 * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            turret.transform.Rotate(Vector3.up * 20 * Time.deltaTime);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        hp -= 0.1f;
+        Debug.Log("hp: " + hp);
+
+        if (hp <= 0)
+        {
+            GameObject effect = Instantiate(expolsion, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+            Destroy(effect, 2f);
         }
     }
 }
