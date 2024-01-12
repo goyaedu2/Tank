@@ -10,19 +10,22 @@ public class MyTank : MonoBehaviour
     private void Start()
     {
         tr = transform;
+        StartCoroutine(startTank());
     }
 
     IEnumerator move()
     {
         Vector3 targetPos = new Vector3(tr.position.x,
             tr.position.y,
-            tr.position.z);
+            tr.position.z + 10);
 
         while (Vector3.Distance(tr.position, targetPos) >= 0.01f)
         {
             tr.position = Vector3.MoveTowards(tr.position, targetPos, 0.1f);
             yield return null;
         }
+
+        yield return StartCoroutine(turnTurret(90, 3f));
     }
 
     IEnumerator turnTurret(float rotateY, float duration)
